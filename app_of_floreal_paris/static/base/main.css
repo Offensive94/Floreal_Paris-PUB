@@ -1,0 +1,716 @@
+/* ========== БАЗОВЫЕ ПЕРЕМЕННЫЕ ========== */
+:root {
+    --nav-height: 80px;
+    --section-spacing: 80px;
+    --footer-padding: 60px 5% 40px;
+    --font-logo: 'Dancing Script', cursive;
+    --font-main: 'Montserrat', sans-serif;
+    --primary-light: #ff6b9d;
+    --primary-dark: #a41623;
+    --footer-dark: #5c0b15;
+    --text-light: #ffffff;
+    --text-secondary: #ffb6c1;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --hover-transition: all 0.3s ease;
+}
+
+/* ========== ОБЩИЕ СТИЛИ ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+    color: var(--text-light);
+    padding-top: var(--nav-height);
+    background-attachment: fixed;
+}
+
+/* ========== СИСТЕМА АНИМАЦИЙ ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-on-scroll {
+    animation: fadeIn 0.8s ease forwards;
+}
+
+/* ========== КОМПОНЕНТ НАВИГАЦИИ С БУРГЕР-МЕНЮ ========== */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--nav-height);
+    background: rgba(164, 22, 35, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+}
+
+.logo {
+    font-family: var(--font-logo);
+    font-size: 2.5rem;
+    color: var(--text-light);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 1001;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+.logo a.logo-link {
+    color: inherit; /* Наследует цвет от родителя */
+    text-decoration: none; /* Убирает подчеркивание */
+    cursor: pointer; /* Курсор в виде руки */
+    display: inline-block; /* Для правильного позиционирования */
+}
+
+/* Для сохранения hover-эффекта */
+.logo a.logo-link:hover {
+    text-decoration: none; /* Убедимся, что при наведении тоже нет подчеркивания */
+    color: inherit; /* Сохраняем цвет при наведении */
+}
+
+/* Навигационные ссылки - всегда скрытое меню */
+.nav-links {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    width: 100%;
+    height: calc(100vh - var(--nav-height));
+    background: var(--primary-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 40px;
+    gap: 25px;
+    transform: translateX(100%);
+    transition: transform 0.4s ease-in-out;
+    z-index: 999;
+}
+
+.nav-links.active {
+    transform: translateX(0);
+}
+
+/* Стили ссылок в меню */
+.nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.5rem;
+    transition: var(--hover-transition);
+    padding: 12px 25px;
+    border-radius: 4px;
+    width: 80%;
+    text-align: center;
+}
+
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Контейнер для кнопок авторизации */
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 80%;
+    max-width: 300px;
+    margin-top: 20px;
+}
+
+/* Базовые стили кнопок */
+.btn {
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    border: none;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+/* Специфичные стили для кнопок */
+.login-btn {
+    background: transparent;
+    border: 2px solid var(--text-light);
+    color: var(--text-light);
+}
+
+.register-btn {
+    background: var(--text-light);
+    color: var(--primary-dark);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Стиль для ссылки "Регистрация" */
+.register-btn a.register-link {
+    color: var(--primary-dark); /* Розовый/вишнёвый цвет из переменных */
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* При наведении на кнопку "Регистрация" */
+.register-btn:hover a.register-link {
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+
+/* Стиль для ссылки "Войти" */
+.login-btn a {
+    color: var(--text-light); /* Белый цвет */
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* При наведении на кнопку "Войти" */
+.login-btn:hover a {
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+/* ========== БУРГЕР-МЕНЮ (ВСЕГДА ВИДИМОЕ) ========== */
+.menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 40px;
+    height: 35px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    position: relative;
+}
+
+.menu-toggle span {
+    width: 100%;
+    height: 4px;
+    background: var(--text-light);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* Анимация бургера при открытии */
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(12px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-12px) rotate(-45deg);
+}
+
+/* ========== ОСНОВНОЙ КОНТЕНТ ========== */
+main {
+    flex: 1;
+    padding: 40px 5% 100px;
+}
+
+section {
+    margin: var(--section-spacing) 0;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ========== КАРТОЧКИ ТОВАРОВ ========== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-image {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+/* ========== КОМПОНЕНТ ФУТЕРА ========== */
+footer {
+    background: var(--footer-dark);
+    padding: var(--footer-padding);
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+.footer-column h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-column h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--primary-light);
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column ul li {
+    margin-bottom: 12px;
+}
+
+.footer-column a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--hover-transition);
+}
+
+.footer-column a:hover {
+    color: var(--text-light);
+    padding-left: 5px;
+}
+
+.copyright {
+    text-align: center;
+    padding-top: 40px;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+@media (max-width: 768px) {
+    nav {
+        padding: 0 20px;
+        height: 70px;
+    }
+
+    .logo {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .nav-links a {
+        font-size: 1.3rem;
+    }
+}
+
+.messages-container {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 1100;
+    max-width: 400px;
+    width: 100%;
+}
+
+.alert {
+    padding: 15px 25px;
+    border-radius: 50px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+}
+
+.alert-success {
+    background: #4CAF50;
+    color: white;
+}
+
+.alert-info {
+    background: #2196F3;
+    color: white;
+}
+
+.alert-error {
+    background: #f44336;
+    color: white;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Стили профиля */
+.profile-section {
+    padding: 40px 0;
+}
+
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.user-greeting {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.profile-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+}
+
+.profile-form {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.profile-form h2 {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+}
+
+.profile-avatar {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--primary-light);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-change {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(164, 22, 35, 0.8);
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.avatar-change:hover {
+    background: var(--primary-dark);
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.stat-item span {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.stat-item strong {
+    font-size: 1.5rem;
+    color: var(--primary-light);
+}
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--text-light);
+    color: var(--text-light);
+}
+
+.btn-danger {
+    background: var(--primary-dark);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .profile-content {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.btn-add-product {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--text-light);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  text-align: center;
+  box-shadow:
+    0 4px 10px rgba(164, 22, 35, 0.4),
+    inset 0 0 10px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+
+  /* Плавный возврат с инерцией */
+  transition:
+    transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    background 0.5s ease;
+}
+
+/* Эффект "сияния" при наведении */
+.btn-add-product::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+  transform: scale(0);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.btn-add-product:hover {
+  background: linear-gradient(135deg, #ff4d8a 0%, #c1122a 100%);
+  transform: scale(1.1) rotate(360deg);
+  box-shadow:
+    0 6px 20px rgba(164, 22, 35, 0.6),
+    inset 0 0 15px rgba(255, 255, 255, 0.4);
+
+  /* Быстрое вращение при наведении */
+  transition:
+    transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.3s ease,
+    background 0.5s ease;
+}
+
+.btn-add-product:hover::after {
+  transform: scale(1);
+}
+
+.btn-add-product:active {
+  transform: scale(0.95) rotate(0deg);
+  box-shadow:
+    0 2px 5px rgba(164, 22, 35, 0.3),
+    inset 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Гарантированное центрирование плюсика */
+.btn-add-product::before {
+  display: block;
+  position: relative;
+  top: -1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    padding: 5px 15px;
+    border: 1px solid rgba(255, 182, 193, 0.3);
+    transition: all 0.3s ease;
+    margin: 0 15px;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-form:hover {
+    border-color: #ff6b9d;
+    box-shadow: 0 0 15px rgba(255, 107, 157, 0.3);
+}
+
+.search-form input {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 8px 0;
+    width: 100%;
+    outline: none;
+}
+
+.search-form input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-form button {
+    background: none;
+    border: none;
+    color: #ffb6c1;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.search-form button:hover {
+    color: #ff6b9d;
+    transform: scale(1.2);
+}

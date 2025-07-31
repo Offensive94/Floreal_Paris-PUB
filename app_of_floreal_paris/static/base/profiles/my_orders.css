@@ -1,0 +1,106 @@
+    /* Стили для таблицы заказов */
+    .my-orders {
+        margin-top: 40px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 182, 193, 0.1);
+        padding: 25px;
+        box-shadow: var(--shadow);
+    }
+
+    .my-orders h3 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: var(--text-light);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 10px;
+        position: relative;
+    }
+
+    .my-orders h3::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-light), transparent);
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .orders-table th {
+        background: rgba(92, 11, 21, 0.3);
+        color: var(--text-secondary);
+        text-align: left;
+        padding: 15px;
+        font-weight: 600;
+    }
+
+    .orders-table td {
+        padding: 15px;
+        border-bottom: 1px solid rgba(255, 182, 193, 0.1);
+    }
+
+    .orders-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .orders-table tr:hover {
+        background: rgba(255, 107, 157, 0.05);
+    }
+
+    .order-action {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-order {
+        padding: 6px 12px; /* Уменьшены отступы */
+        border-radius: 30px; /* Более круглые углы */
+        font-weight: 600;
+        font-size: 0.85rem; /* Уменьшен размер шрифта */
+        cursor: pointer;
+        transition: var(--hover-transition);
+        border: none;
+        min-width: auto; /* Убрана фиксированная ширина */
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px; /* Отступ между иконкой и текстом */
+    }
+
+    .btn-pay {
+        background: linear-gradient(45deg, #28a745, #218838);
+        color: white;
+        padding: 6px 15px; /* Отдельные настройки для кнопки оплаты */
+    }
+
+    .btn-receipt {
+        background: transparent;
+        border: 1px solid var(--text-secondary); /* Более тонкая граница */
+        color: var(--text-secondary);
+        padding: 6px 12px;
+    }
+
+    .btn-pay:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-receipt:hover {
+        background: rgba(255, 182, 193, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .no-orders {
+        color: var(--text-secondary);
+        text-align: center;
+        padding: 20px;
+    }

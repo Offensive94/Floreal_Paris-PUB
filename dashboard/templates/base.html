@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{% static 'dashboard/main_dash.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Floreal_Admin1337 — {% block title %}{% endblock %}</title>
+</head>
+<body>
+  <div id="loading" class="loading">
+    <div class="loading-text">INITIALIZING ADMIN SYSTEM...</div>
+    <div class="loading-bar"></div>
+    <div class="loading-text" style="margin-top: 20px; font-size: 0.9rem;">Floreal_Admin1337 v1.0 © 2023</div>
+  </div>
+
+  <h1>Floreal_Admin</h1>
+  <div class="nav">
+  <a href="{% url 'dashboard:index' %}">Главная</a>
+  <a href="{% url 'dashboard:user_list' %}">Пользователи</a>
+
+  <form method="get" action="{% url 'dashboard:user_list' %}" style="display:inline-flex; align-items:center; gap:5px;">
+    <input type="text" name="id" placeholder="ID пользователя" value="{{ search_id|default:'' }}" class="nav-input">
+    <button type="submit" class="btn">🔍</button>
+  </form>
+
+  <a href="{% url 'dashboard:product_list' %}" style="margin-left: 2rem;">Товары</a>
+
+  <form method="get" action="{% url 'dashboard:product_list' %}" style="display:inline-flex; align-items:center; gap:5px;">
+    <input type="text" name="q" placeholder="Поиск товаров…" value="{{ query|default:'' }}" class="nav-input">
+    <button type="submit" class="btn">🔍</button>
+  </form>
+
+  <a href="{% url 'dashboard:review_list' %}">Отзывы</a>
+  <a href="{% url 'home' %}">← Вернуться на сайт</a>
+</div>
+
+
+  <div id="content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <div class="console-output">System initialized at {% now "H:i:s" %}</div>
+
+  <div class="status-bar">
+    <div>STATUS: <span style="color: #0f0;">OPERATIONAL</span></div>
+    <div>USER: ADMIN</div>
+    <div>{% now "d.m.Y H:i:s" %}</div>
+  </div>
+
+  <div id="modal-bg" class="modal-bg">
+    <div class="modal">
+      <p id="modal-text" style="color:#0f0"></p>
+      <div class="modal-buttons">
+        <button id="modal-yes" class="btn">Да</button>
+        <button id="modal-no" class="btn">Нет</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function ajaxPost(url, data, onSuccess){
+      // Показываем экран загрузки
+      document.getElementById('loading').style.display = 'flex';
+
+      fetch(url, {
+        method:'POST',
+        headers:{
+          'X-CSRFToken': getCookie('csrftoken'),
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(r=>r.json())
+      .then(result => {
+        // Скрываем экран загрузки
+        document.getElementById('loading').style.display = 'none';
+        onSuccess(result);
+      })
+      .catch(error => {
+        document.getElementById('loading').style.display = 'none';
+        console.error('Error:', error);
+      });
+    }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    function confirmModal(text, onConfirm){
+      const bg = document.getElementById('modal-bg'),
+            msg = document.getElementById('modal-text'),
+            yes = document.getElementById('modal-yes'),
+            no  = document.getElementById('modal-no');
+      msg.textContent = text;
+      bg.style.display='flex';
+      yes.onclick = ()=>{ bg.style.display='none'; onConfirm(); };
+      no.onclick  = ()=>{ bg.style.display='none'; };
+    }
+
+    // Имитация загрузки системы
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

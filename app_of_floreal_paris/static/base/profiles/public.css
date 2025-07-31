@@ -1,0 +1,345 @@
+  /* Специфичные стили для публичного профиля */
+  .profile-info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .info-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+  }
+
+  .info-item i {
+    font-size: 1.2rem;
+    color: var(--primary-light);
+  }
+
+  /* Стили для рейтинга */
+  .rating-item {
+    position: relative;
+  }
+
+  .rating-note {
+    color: #ffd700; /* Золотой цвет для выделения */
+    font-weight: bold;
+    font-size: 0.9em;
+    background: rgba(92, 11, 21, 0.7); /* Тёмный фон */
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 5px;
+    display: inline-block;
+  }
+
+  .profile-products {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-products h2 {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Обновлённые стили для карточек товаров */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+  }
+
+  .product-card-link {
+    text-decoration: none;
+    display: block;
+    transition: all 0.3s ease;
+  }
+
+  .product-card-link:hover .product-card {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 40px rgba(164, 22, 35, 0.4);
+    z-index: 10;
+  }
+
+  .product-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+  }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(164, 22, 35, 0) 0%,
+      rgba(164, 22, 35, 0.1) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+
+  .product-card-link:hover .product-card::before {
+    background: linear-gradient(
+      to bottom,
+      rgba(164, 22, 35, 0) 0%,
+      rgba(164, 22, 35, 0.3) 100%
+    );
+  }
+
+  .product-image {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    z-index: 0;
+  }
+
+  .product-info {
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .product-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: var(--text-light);
+  }
+
+  .product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+  }
+
+  .product-price {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-light);
+  }
+
+  .product-date {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .no-products {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+  }
+
+  .no-products i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+  }
+
+  .no-products p {
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 768px) {
+    .profile-info {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-header h1 {
+      font-size: 2rem;
+    }
+
+    .profile-info-card,
+    .profile-products {
+      padding: 20px;
+    }
+
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Стили для админских действий */
+  .profile-admin-actions {
+    margin-top: 20px;
+    text-align: right;
+  }
+
+  .delete-user-form {
+    display: inline-block;
+    margin-top: 15px;
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, var(--primary-dark), var(--footer-dark));
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(92, 11, 21, 0.4);
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(135deg, #c1122a, #7a0a18);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(92, 11, 21, 0.6);
+  }
+
+  .btn-danger:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(92, 11, 21, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .profile-admin-actions {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .btn-danger {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+    /* Добавляем переменные для кнопки удаления */
+  :root {
+    --delete-red: #dc3545;
+    --delete-red-dark: #bd2130;
+  }
+
+  /* Стили для админских действий */
+  .profile-admin-actions {
+    margin-top: 25px;
+    text-align: center;
+  }
+
+  .delete-user-form {
+    display: inline-block;
+  }
+
+  /* Обновленные стили для кнопки удаления */
+  .action-btn {
+    position: relative;
+    overflow: hidden;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 25px;
+    border: none;
+    min-width: 200px;
+    text-align: center;
+  }
+
+  .btn-delete {
+    background: linear-gradient(45deg, var(--delete-red), var(--delete-red-dark));
+    color: white;
+    position: relative;
+  }
+
+  /* Эффект блеска при наведении */
+  .btn-delete::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(25deg);
+    transition: all 0.5s ease;
+    opacity: 0;
+  }
+
+  .btn-delete:hover::after {
+    left: 140%;
+    opacity: 1;
+  }
+
+  /* Анимация дрожания для кнопки удаления */
+  .btn-delete:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.6);
+    animation: shake 0.5s ease infinite;
+  }
+
+  @keyframes shake {
+    0% { transform: translateY(-5px) translateX(0); }
+    25% { transform: translateY(-5px) translateX(-3px); }
+    50% { transform: translateY(-5px) translateX(3px); }
+    75% { transform: translateY(-5px) translateX(-3px); }
+    100% { transform: translateY(-5px) translateX(0); }
+  }
+
+  /* Эффект пульсации при активации */
+  @keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+    70% { box-shadow: 0 0 0 12px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+  }
+
+  .btn-delete:active {
+    animation: pulse-red 0.5s;
+    transform: translateY(0);
+  }
+
+  /* Усиленный блеск для опасных кнопок */
+  .btn-delete:hover::after {
+    background: rgba(255, 255, 255, 0.5);
+    width: 30%;
+  }
+
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .action-btn {
+      min-width: 100%;
+      padding: 14px 20px;
+      font-size: 1rem;
+    }
+  }

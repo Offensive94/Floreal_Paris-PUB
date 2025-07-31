@@ -1,0 +1,67 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block title %}«{{ query }}»{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/search.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="search-container">
+  <div class="search-header">
+    <h2>Результаты поиска: «{{ query }}»</h2>
+  </div>
+
+  {# --- Сначала пользователи, если есть совпадения --- #}
+  {% if user_results %}
+    <h3>Пользователи</h3>
+    <div class="results-grid">
+      {% for u in user_results %}
+        <a href="{% url 'public_profile' u.username %}" class="search-card">
+          <div class="search-card-body">
+            <h5 class="search-card-title">{{ u.username }}</h5>
+            <p class="search-card-meta">Email: {{ u.email }}</p>
+            <p class="search-card-meta">Зарегистрирован: {{ u.joined|date:"d.m.Y" }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# --- Затем товары, если есть совпадения --- #}
+  {% if product_results %}
+    <h3>Товары</h3>
+    <div class="results-grid">
+      {% for p in product_results %}
+        <a href="{% url 'product_detail' p.id %}" class="search-card">
+          {% if p.image %}
+            <img src="{{ MEDIA_URL }}{{ p.image }}" class="search-img" alt="{{ p.title }}">
+          {% else %}
+            <div class="search-img"
+                 style="background: rgba(255,182,193,0.1);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;">
+              <span style="color: #ffb6c1;">Изображение отсутствует</span>
+            </div>
+          {% endif %}
+          <div class="search-card-body">
+            <h5 class="search-card-title">{{ p.title }}</h5>
+            <p class="search-card-price">{{ p.price }} ₽</p>
+            <p class="search-card-meta">Просмотров: {{ p.views }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# --- Ни пользователей, ни товаров не найдено --- #}
+  {% if not user_results and not product_results %}
+    <div class="no-results">
+      <p>По запросу «{{ query }}» ничего не найдено</p>
+      <a href="{% url 'home' %}" class="search-again">Вернуться на главную</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

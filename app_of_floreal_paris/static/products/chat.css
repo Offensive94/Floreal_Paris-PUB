@@ -1,0 +1,12 @@
+    .btn-chat {
+        background: linear-gradient(45deg, #1e88e5, #0d47a1);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-chat:hover {
+        background: linear-gradient(45deg, #2196f3, #1976d2);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(33, 150, 243, 0.4);
+    }
+

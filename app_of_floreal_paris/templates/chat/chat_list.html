@@ -1,0 +1,36 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/chat_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="chats-container">
+  <h2 class="chats-header">Мои чаты</h2>
+
+  <ul class="chats-list">
+    {% for room in rooms %}
+      <li class="chat-card">
+        <a href="{% url 'chat_room' room.id %}" class="chat-card-link">
+          <div class="chat-info">
+            <div class="chat-product">
+              {{ room.product.title }}
+            </div>
+            <div class="chat-participants">
+              <i class="fa-solid fa-user-group"></i>
+              {{ room.buyer.username }} ↔ {{ room.seller.username }}
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right"></i>
+        </a>
+      </li>
+    {% empty %}
+      <li class="empty-chats">
+        <i class="fa-solid fa-comment-slash"></i>
+        У вас пока нет переписок
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+  <div class="auth-container">
+    <div class="auth-image">
+      <img src="{% static 'accounts/images/floral-auth.jpg' %}" alt="Цветочная авторизация">>
+    </div>
+    <div class="auth-form">
+      <h2>Регистрация в Floreal Paris</h2>
+
+      {# --- Всплывающие сообщения в правом верхнем углу --- #}
+      <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+        {% for message in messages %}
+          <div class="toast align-items-center text-white bg-{{ message.tags }} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+              <div class="toast-body">
+                {{ message }}
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.username.label_tag }}
+          {{ form.username }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.email.label_tag }}
+          {{ form.email }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.password1.label_tag }}
+          {{ form.password1 }}
+        </div>
+
+        <div class="mb-4">
+          {{ form.password2.label_tag }}
+          {{ form.password2 }}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+      </form>
+
+      <div class="auth-links mt-3 text-center">
+        <a href="{% url 'login' %}">Уже есть аккаунт? Войдите</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Инициализация Bootstrap‑тостов #}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.toast').forEach(toastEl => {
+      new bootstrap.Toast(toastEl, { delay: 5000 }).show();
+    });
+  });
+</script>
+{% endblock %}

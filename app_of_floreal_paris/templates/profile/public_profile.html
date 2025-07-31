@@ -1,0 +1,85 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'base/profiles/public.css' %}">
+{% endblock %}
+{% block content %}
+<section class="profile-section">
+  <div class="profile-container">
+    <div class="profile-header">
+      <h1>Профиль пользователя {{ profile_user.username }}</h1>
+      <div class="user-greeting">Зарегистрирован {{ profile_user.date_joined|date:"d.m.Y" }}</div>
+
+    <!-- Кнопка удаления в заголовке профиля -->
+      {% if user.is_authenticated and user.is_superuser or user.role == 'admin' %}
+        <div class="profile-admin-actions">
+          <form action="{% url 'delete_user' profile_user.username %}" method="post" class="delete-user-form">
+            {% csrf_token %}
+            <button type="submit" class="action-btn btn-delete">
+              <i class="fas fa-trash-alt"></i> Удалить пользователя
+            </button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="profile-info-card">
+      <div class="profile-info">
+        <div class="info-item">
+          <i class="fas fa-user"></i>
+          <span>{{ profile_user.username }}</span>
+        </div>
+        {% if profile_user.profile.phone_number %}
+          <div class="info-item">
+            <i class="fas fa-phone"></i>
+            <span>{{ profile_user.profile.phone_number }}</span>
+          </div>
+        {% endif %}
+        {% if profile_user.profile.address %}
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>{{ profile_user.profile.address }}</span>
+          </div>
+        {% endif %}
+        <div class="info-item rating-item">
+          <i class="fas fa-star"></i>
+          <span>Рейтинг: <span class="rating-note">(доработать)</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-products">
+      <h2><i class="fas fa-list"></i> Объявления пользователя</h2>
+
+      {% if products %}
+        <div class="products-grid">
+          {% for product in products %}
+            <a href="{% url 'product_detail' product.id %}" class="product-card-link">
+              <div class="product-card animate-on-scroll">
+                <div class="product-image"
+                     style="background-image: url('{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.jpg' %}{% endif %}')">
+                </div>
+                <div class="product-info">
+                  <h3>{{ product.title }}</h3>
+                  <div class="product-meta">
+                    <span class="product-price">{{ product.price }} ₽</span>
+                    <span class="product-date">{{ product.created_at|date:"d.m.Y" }}</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-products">
+          <i class="fas fa-box-open"></i>
+          <p>У пользователя пока нет активных объявлений</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

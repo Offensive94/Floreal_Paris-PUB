@@ -1,0 +1,144 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/product_detail.css' %}">
+<link rel="stylesheet" href="{% static 'products/reviews/reviews.css' %}">
+<link rel="stylesheet" href="{% static 'products/chat.css' %}">
+{% endblock %}
+
+{% block title %}{{ product.title }}{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="product-gallery">
+        <div class="main-image">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.title }}">
+            {% else %}
+                <div class="no-image-placeholder">
+                    <span>Изображение отсутствует</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="product-info">
+            <h1 class="product-title">{{ product.title }}</h1>
+            <div class="product-price">{{ product.price }} ₽</div>
+            <div class="product-status {% if product.status == 'in_stock' %}status-in-stock{% endif %}">
+                {% if product.status == 'in_stock' %}
+                     В наличии <i class="fa-solid fa-circle-check"></i>
+                {% else %}
+                    ⌛ Под заказ
+                {% endif %}
+            </div>
+
+            <div class="product-description">
+                {{ product.description|linebreaks }}
+            </div>
+
+<div class="action-buttons">
+    {% if product.seller == user or user.role == 'admin' %}
+        <a href="{% url 'edit_product' product.id %}" class="action-btn btn-edit" style="text-decoration: none;">
+            <i class="fa-solid fa-pen-fancy"></i> Редактировать
+        </a>
+        <form action="{% url 'delete_product' product.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="action-btn btn-delete">
+                <i class="fa-solid fa-trash-can"></i> Удалить
+            </button>
+        </form>
+    {% endif %}
+
+    {% if not user.is_authenticated %}
+        <p>Чтобы добавлять товар в корзину, Вам необходимо <a href="{% url 'login' %}">авторизоваться</a>.</p>
+    {% elif product.seller != user %}
+        <form class="add-to-cart-form" data-product-id="{{ product.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="action-btn btn-add-cart">
+                <i class="fa-solid fa-cart-plus"></i> В корзину
+            </button>
+        </form>
+        <button class="action-btn btn-favorite">
+            <i class="fa-solid fa-heart"></i> В избранное
+        </button>
+
+        {% if user.is_authenticated and product.seller != user %}
+            <a href="{% url 'start_chat' product.id %}" class="action-btn btn-chat">
+                <i class="fa-solid fa-comment"></i> Написать продавцу
+            </a>
+        {% endif %}
+    {% endif %}
+</div>
+
+
+            <div class="product-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Продавец: <a style="color: rgb(255 255 255);" href="{% url 'public_profile' product.seller.username %}">{{ product.seller.username }}</a>
+</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Создано: {{ product.created_at|date:"d.m.Y H:i" }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Просмотров: {{ product.views }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="product-reviews">
+  <h2>Отзывы о товаре</h2>
+
+  <div class="reviews-grid">
+    {% for review in product.reviews.all %}
+      <div class="review-card review-rating-{{ review.rating }}">
+        <div class="review-header">
+          <div class="review-user">{{ review.user.username }}</div>
+          <div class="review-rating">
+            {% for i in "12345" %}
+              {% if forloop.counter <= review.rating %}
+                <span style="color:
+                  {% if review.rating <= 2 %}var(--bad-review)
+                  {% elif review.rating == 3 %}var(--medium-review)
+                  {% else %}var(--good-review){% endif %};
+                ">★</span>
+              {% else %}
+                <span style="color:#444">★</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% if user.is_authenticated and user.role == 'admin' %}
+            <form action="{% url 'delete_review' review.id %}" method="post" style="margin-left:auto;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+            </form>
+          {% endif %}
+        </div>
+
+        <div class="review-content">
+          {{ review.comment|linebreaks }}
+        </div>
+      </div>
+    {% empty %}
+      <p class="no-reviews">Пока нет отзывов. Будьте первым!</p>
+    {% endfor %}
+  </div>
+
+  <div class="review-action">
+    {% if user.is_authenticated %}
+      <a href="{% url 'add_review' product.id %}" class="review-btn">
+        <i class="fas fa-pen"></i> Оставить отзыв
+      </a>
+    {% else %}
+      <p style="color: var(--text-secondary);">
+        <a href="{% url 'login' %}" style="color: var(--primary-light); text-decoration: none;">
+          Войдите
+        </a>, чтобы оставить отзыв
+      </p>
+    {% endif %}
+  </div>
+</div>
+
+</section>
+{% endblock %}

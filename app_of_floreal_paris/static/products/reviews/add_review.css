@@ -1,0 +1,179 @@
+:root {
+    --primary-light: #ff6b9d;
+    --primary-dark: #a41623;
+    --text-light: #ffffff;
+    --text-secondary: #ffb6c1;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --hover-transition: all 0.3s ease;
+    --good-review: #28a745;
+    --medium-review: #ffc107;
+    --bad-review: #dc3545;
+}
+
+.review-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 182, 193, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.review-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 107, 157, 0.1), transparent);
+    transform: rotate(30deg);
+    opacity: 0.3;
+    z-index: -1;
+    animation: shine 8s infinite linear;
+}
+
+@keyframes shine {
+    0% { transform: rotate(30deg) translateX(-50%); }
+    100% { transform: rotate(30deg) translateX(50%); }
+}
+
+.review-container h2 {
+    color: var(--text-light);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.review-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
+}
+
+.review-form {
+    background: rgba(92, 11, 21, 0.2);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(255, 182, 193, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 182, 193, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: var(--hover-transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.3);
+}
+
+.rating-stars {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.rating-stars label {
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #444;
+    transition: var(--hover-transition);
+}
+
+.rating-stars input[type="radio"] {
+    display: none;
+}
+
+.rating-stars input[type="radio"]:checked ~ label {
+    color: var(--good-review);
+}
+
+.rating-stars label:hover,
+.rating-stars label:hover ~ label {
+    color: var(--medium-review);
+}
+
+.submit-btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(45deg, var(--primary-light), var(--primary-dark));
+    color: white;
+    border: none;
+    padding: 14px 35px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    box-shadow: var(--shadow);
+    display: block;
+    margin: 30px auto 0;
+}
+
+.submit-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(25deg);
+    transition: var(--hover-transition);
+    opacity: 0;
+}
+
+.submit-btn:hover::after {
+    left: 140%;
+    opacity: 1;
+}
+
+.submit-btn:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(164, 22, 35, 0.6);
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 107, 157, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 157, 0); }
+}
+
+.submit-btn:active {
+    animation: pulse 0.5s;
+}

@@ -1,0 +1,123 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block title %}Ваш профиль{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'base/profiles/profile.css' %}">
+<link rel="stylesheet" href="{% static 'base/profiles/my_orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="profile-header">
+        <h2>Ваш профиль</h2>
+    </div>
+
+    <div class="profile-info">
+        <div class="info-item">
+            <span class="info-label">Ваше чудесное имя:</span>
+            <span class="info-value">{{ user.username }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">E-mail:</span>
+            <span class="info-value">{{ user.email }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Вы присоединилсь к нам</span>
+            <span class="info-value">{{ user.date_joined|date:"d.m.Y" }}!</span>
+            <span class="info-label">Благодарим Вас за доверие к нам!</span>
+        </div>
+    </div>
+
+    <div class="profile-actions">
+        <button class="action-btn btn-secondary">
+            <i class="fas fa-lock"></i> Сменить пароль
+        </button>
+        <a href="{% url 'logout' %}" class="action-btn btn-danger">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+        </a>
+    </div>
+
+    <div class="my-products">
+        <h3>Мои объявления</h3>
+        {% if my_products %}
+        <div class="product-grid">
+            {% for product in my_products %}
+            <div class="product-card">
+                <a href="{% url 'product_detail' product.id %}" class="card-link">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                    {% else %}
+                        <div class="no-image-placeholder" style="height:200px; display:flex; align-items:center; justify-content:center; background:rgba(255,182,193,0.1);">
+                            <span>Изображение отсутствует</span>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.title }}</h5>
+                        <p class="card-text">{{ product.price }} ₽</p>
+                    </div>
+                </a>
+
+                <div class="card-actions">
+                    <a href="{% url 'edit_product' product.id %}" class="action-btn btn-sm btn-warning">
+                        <i class="fas fa-pen-fancy"></i> Редактировать
+                    </a>
+                    <form action="{% url 'delete_product' product.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn btn-sm btn-danger-sm">
+                            <i class="fas fa-trash-can"></i> Удалить
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="no-products">У вас ещё нет своих объявлений. <a href="{% url 'add_product' %}">Создать?</a></p>
+        {% endif %}
+    </div>
+
+<div class="my-orders">
+        <h3>Мои заказы</h3>
+        {% if my_orders %}
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Дата</th>
+                        <th>Сумма</th>
+                        <th>Статус</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in my_orders %}
+                    <tr>
+                        <td>{{ o.id }}</td>
+                        <td>{{ o.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ o.total_amount }} ₽</td>
+                        <td>{{ o.get_status_display }}</td>
+                        <td>
+                            <div class="order-action">
+                                {% if o.status == 'pending' %}
+                                <a href="{% url 'payment' o.id %}" class="btn-order btn-pay" style="text-decoration: none;">
+                                    <i class="fas fa-wallet"></i> Оплатить
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'generate_receipt' o.transaction_id %}" class="btn-order btn-receipt" style="text-decoration: none;">
+                                    <i class="fas fa-file-download"></i> Чек
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-orders">У вас ещё нет заказов.</p>
+        {% endif %}
+    </div>
+
+</section>
+{% endblock %}

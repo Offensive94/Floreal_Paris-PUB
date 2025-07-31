@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Отзывы{% endblock %}
+{% block content %}
+<table>
+  <tr><th>ID</th><th>Пользователь</th><th>Товар</th><th>Оценка</th><th>Комментарий</th><th>Действия</th></tr>
+  {% for r in reviews %}
+  <tr id="rev-{{r.id}}">
+    <td>{{r.id}}</td>
+    <td>{{r.user.username}}</td>
+    <td>{{r.product.title}}</td>
+    <td>{{r.rating}}</td>
+    <td>{{r.comment}}</td>
+    <td>
+      <button class="btn" onclick="
+        confirmModal('Удалить отзыв #{{r.id}}?', ()=>{
+          ajaxPost('{% url "dashboard:delete_review" r.id %}', {}, ()=>{
+            document.getElementById('rev-{{r.id}}').remove();
+          });
+        });
+      ">Delete</button>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

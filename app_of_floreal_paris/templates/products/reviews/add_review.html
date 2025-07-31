@@ -1,0 +1,34 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block title %}Оцените{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/reviews/add_review.css' %}">
+{% endblock %}
+{% block content %}
+<div class="review-container">
+    <h2>Оставить отзыв для <span style="color: var(--primary-light);">{{ product.title }}</span></h2>
+
+    <form method="post" class="review-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_rating">Оценка:</label>
+            <div class="rating-stars">
+                {% for i in "54321" %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if form.rating.value == i %}checked{% endif %}>
+                    <label for="star{{ i }}">★</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_comment">Ваш отзыв:</label>
+            {{ form.comment }}
+        </div>
+
+        <button type="submit" class="submit-btn">Отправить отзыв</button>
+    </form>
+</div>
+{% endblock %}

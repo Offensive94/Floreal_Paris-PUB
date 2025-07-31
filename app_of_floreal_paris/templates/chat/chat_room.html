@@ -1,0 +1,92 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/chat_room.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="chat-page-wrapper">
+  <div class="chat-container">
+    <h2 class="chat-title">Чат по товару “{{ room.product.title }}”</h2>
+
+    <div id="messages" class="chat-messages">
+      <div class="empty-chat">Пока нет сообщений. Начните общение первым!</div>
+    </div>
+
+    <form id="msg-form" class="chat-form">
+      {% csrf_token %}
+      <textarea name="content" id="msg-input" rows="2" placeholder="Введите сообщение…"></textarea>
+      <button type="submit" class="send-btn">
+        <i class="fa-solid fa-paper-plane"></i> Отправить
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const roomId = {{ room.id }};
+  const messagesEl = document.getElementById('messages');
+  const form = document.getElementById('msg-form');
+  const currentUser = "{{ user.username }}";
+
+  // Функция подгрузки всех сообщений
+  function loadMessages() {
+    fetch("{% url 'chat_messages' room.id %}")
+      .then(r => r.json())
+      .then(data => {
+        messagesEl.innerHTML = '';
+
+        if (data.messages.length === 0) {
+          messagesEl.innerHTML = '<div class="empty-chat">Пока нет сообщений. Начните общение первым!</div>';
+          return;
+        }
+
+        data.messages.forEach(m => {
+          const isOwn = m.sender === currentUser;
+          // ИЗМЕНЕНО: новые классы
+          const messageClass = isOwn ? 'chat-message chat-message-own' : 'chat-message chat-message-other';
+
+          const div = document.createElement('div');
+          div.className = messageClass;
+          div.innerHTML = `
+            <div class="message-sender">
+              <i class="fa-solid fa-user"></i>
+              ${m.sender}
+            </div>
+            <div class="message-content">${m.content}</div>
+            <div class="message-timestamp">${m.timestamp}</div>
+          `;
+          messagesEl.append(div);
+        });
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      });
+  }
+
+  // Отправка формы
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const content = document.getElementById('msg-input').value.trim();
+    if (!content) return;
+
+    const formData = new FormData(form);
+    fetch("{% url 'send_message' room.id %}", {
+      method: 'POST',
+      body: formData,
+    })
+    .then(r => r.json())
+    .then(msg => {
+      if (msg.error) {
+        alert(msg.error);
+      } else {
+        loadMessages();
+        form.reset();
+      }
+    });
+  });
+
+  // начальная загрузка + периодический апдейт
+  loadMessages();
+  setInterval(loadMessages, 5000);
+</script>
+{% endblock %}

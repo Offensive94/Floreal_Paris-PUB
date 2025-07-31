@@ -1,0 +1,276 @@
+:root {
+    --primary-light: #ff6b9d;
+    --primary-dark: #a41623;
+    --text-light: #ffffff;
+    --text-secondary: #ffb6c1;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --hover-transition: all 0.3s ease;
+    --edit-yellow: #ffc107;
+    --edit-yellow-dark: #e0a800;
+    --delete-red: #dc3545;
+    --delete-red-dark: #bd2130;
+}
+
+.profile-section {
+    max-width: 900px;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-header h2 {
+    color: var(--text-light);
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Убрал блок с аватаркой */
+.user-avatar {
+    display: none;
+}
+
+.profile-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 182, 193, 0.1);
+}
+
+.info-item {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+}
+
+.info-value {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--text-light);
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.action-btn {
+    position: relative;
+    overflow: hidden;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 25px;
+    border: none;
+    min-width: 200px;
+    text-align: center;
+    text-decoration: none !important; /* Убираем подчёркивание */
+}
+
+.btn-secondary {
+    background: linear-gradient(45deg, #6c757d, #5a6268);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, var(--delete-red), var(--delete-red-dark));
+    color: white;
+}
+
+/* Стили для раздела "Мои объявления" */
+.my-products {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.my-products h3 {
+    color: var(--text-light);
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.product-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 182, 193, 0.1);
+    transition: var(--hover-transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(164, 22, 35, 0.4);
+}
+
+.card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.card-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.card-text {
+    font-size: 1.4rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.btn-sm {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    min-width: auto;
+    text-decoration: none !important; /* Убираем подчёркивание */
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, var(--edit-yellow), var(--edit-yellow-dark));
+    color: #000;
+}
+
+.btn-danger-sm {
+    background: linear-gradient(45deg, var(--delete-red), var(--delete-red-dark));
+    color: white;
+}
+
+.no-products {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 20px;
+    font-size: 1.2rem;
+}
+
+/* Убираем подчёркивание у всех ссылок в карточках */
+.product-card a {
+    text-decoration: none !important;
+}
+
+/* Блестящая анимация при наведении */
+.action-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(25deg);
+    transition: var(--hover-transition);
+    opacity: 0;
+}
+
+.action-btn:hover::after {
+    left: 140%;
+    opacity: 1;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+}
+
+.btn-danger:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+}
+
+.btn-warning:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(255, 193, 7, 0.4);
+}
+
+.btn-danger-sm:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+    animation: shake 0.5s ease infinite;
+}
+
+/* Анимация дрожания для кнопки удаления */
+@keyframes shake {
+    0% { transform: translateY(-5px) translateX(0); }
+    25% { transform: translateY(-5px) translateX(-3px); }
+    50% { transform: translateY(-5px) translateX(3px); }
+    75% { transform: translateY(-5px) translateX(-3px); }
+    100% { transform: translateY(-5px) translateX(0); }
+}
+
+@media (max-width: 768px) {
+    .profile-actions {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}

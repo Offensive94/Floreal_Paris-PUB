@@ -1,0 +1,12 @@
+{% extends "base/base_template.html" %}
+{% block content %}
+<section style="max-width:480px;margin:2rem auto;">
+  <h2>Оплата заказа №{{ order.id }}</h2>
+  <p>Сумма: {{ order.total_amount }} ₽</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary w-100">Оплатить</button>
+  </form>
+</section>
+{% endblock %}

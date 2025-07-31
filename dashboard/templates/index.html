@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Панель управления{% endblock %}
+
+{% block content %}
+<h2>Добро пожаловать в админ-панель Floreal Paris 🌸</h2>
+<p>Вы вошли как: <strong>{{ request.user.username }}</strong> (роль: <span style="color: #f0f">{{ request.user.role }}</span>)</p>
+
+<ul>
+  {% if request.user.is_superuser %}
+    <li><a href="{% url 'dashboard:user_list' %}">👥 Управление пользователями</a></li>
+  {% endif %}
+  <li><a href="{% url 'dashboard:product_list' %}">🛒 Модерация товаров</a></li>
+  <li><a href="{% url 'dashboard:review_list' %}">💬 Модерация отзывов</a></li>
+</ul>
+
+<p><a href="{% url 'home' %}">← Вернуться на сайт</a></p>
+{% endblock %}

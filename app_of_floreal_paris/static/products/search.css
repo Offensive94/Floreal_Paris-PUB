@@ -1,0 +1,112 @@
+.search-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.search-header h2 {
+    font-size: 2.5rem;
+    color: #ffffff;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.search-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff6b9d, transparent);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.search-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 182, 193, 0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: block; /* Делаем карточку блочным элементом для кликабельности */
+    text-decoration: none; /* Убираем подчёркивание */
+}
+
+.search-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(164, 22, 35, 0.4);
+}
+
+.search-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.search-card-body {
+    padding: 20px;
+}
+
+.search-card-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.search-card-price {
+    font-size: 1.4rem;
+    color: #ffb6c1;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.search-card-meta {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #ffb6c1;
+    font-size: 1.2rem;
+    grid-column: 1 / -1;
+}
+
+.no-results p {
+    margin-bottom: 20px;
+}
+
+.search-again {
+    display: inline-block;
+    background: linear-gradient(45deg, #ff6b9d, #a41623);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.search-again:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(164, 22, 35, 0.4);
+}

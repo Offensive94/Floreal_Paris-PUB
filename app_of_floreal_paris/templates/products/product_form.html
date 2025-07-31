@@ -1,0 +1,75 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block title %}Добавление товара{% endblock %}
+
+{% block content %}
+<div class="add-product-container">
+  <div class="add-product-card">
+    <h2 class="add-product-title">Добавить новый товар</h2>
+    <link rel="stylesheet" href="{% static 'products/product_form.css' %}">
+    <form method="post" enctype="multipart/form-data" novalidate class="product-form">
+      {% csrf_token %}
+
+      {{ form.non_field_errors }}
+
+      <div class="form-group">
+        {{ form.title.label_tag }}
+        {{ form.title }}
+        {{ form.title.errors }}
+        <div class="form-underline"></div>
+      </div>
+
+      <div class="form-group">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+        {{ form.description.errors }}
+        <div class="form-underline"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          {{ form.price.label_tag }}
+          {{ form.price }}
+          {{ form.price.errors }}
+          <div class="form-underline"></div>
+        </div>
+
+        <div class="form-group half-width">
+          {{ form.status.label_tag }}
+          {{ form.status }}
+          {{ form.status.errors }}
+          <div class="form-underline"></div>
+        </div>
+      </div>
+
+      <div class="form-group file-upload">
+        {{ form.image.label_tag }}
+        <div class="upload-area">
+          {{ form.image }}
+          <div class="upload-hint">
+            <i class="upload-icon"></i>
+            <span>Перетащите изображение или кликните для выбора</span>
+          </div>
+        </div>
+        {{ form.image.errors }}
+      </div>
+
+      <div class="form-group">
+        {{ form.tags.label_tag }}
+        {{ form.tags }}
+        {{ form.tags.errors }}
+        <div class="tags-hint">Выберите теги через запятую</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">
+          <span class="btn-text">Сохранить товар</span>
+          <i class="btn-icon"></i>
+        </button>
+        <a href="{% url 'product_list' %}" class="cancel-btn">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

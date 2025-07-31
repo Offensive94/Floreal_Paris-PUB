@@ -1,0 +1,51 @@
+/* ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И БАЗОВЫЕ НАСТРОЙКИ ========== */
+/* Цветовая схема для флористического магазина */
+:root {
+    /* Основные цвета градиента */
+    --primary-light: #ff6b9d;     /* Ярко-розовый */
+    --primary-dark: #a41623;      /* Винно-красный */
+    --footer-dark: #5c0b15;       /* Тёмно-красный для футера */
+
+    /* Акцентные цвета */
+    --accent-pink: #ffb6c1;       /* Светло-розовый для ховеров */
+    --text-light: #ffffff;         /* Основной цвет текста */
+    --text-secondary: #ffb6c1;    /* Второстепенный текст */
+
+    /* Эффекты */
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Базовая тень */
+    --hover-transition: all 0.3s ease; /* Стандартный переход */
+
+    /* Размеры */
+    --nav-height: 80px;           /* Высота навигации */
+    --footer-padding: 60px 5% 40px; /* Отступы футера */
+    --section-spacing: 100px;     /* Отступ между секциями */
+
+    /* Шрифты */
+    --font-main: 'Montserrat', sans-serif;
+    --font-logo: 'Dancing Script', cursive;
+}
+
+/* Базовый сброс стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Настройки плавного скролла */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Основные стили body */
+body {
+    font-family: var(--font-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+    color: var(--text-light);
+    padding-top: var(--nav-height); /* Отступ под фиксированный навбар */
+    background-attachment: fixed;
+    line-height: 1.6;
+}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block content %}
+<table>
+  <tr><th>ID</th><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>
+  {% for u in users %}
+  <tr id="user-{{u.id}}">
+    <td>{{u.id}}</td>
+    <td>{{u.username}}</td>
+    <td>{{u.email}}</td>
+    <td id="role-{{u.id}}">{{u.role}}</td>
+    <td>
+      {% if not u.is_superuser %}
+      <button class="btn" onclick="
+        confirmModal('Меняем роль для {{u.username}}?', ()=>{
+          ajaxPost('{% url "dashboard:toggle_admin" u.id %}', {}, data=>{
+            document.getElementById('role-{{u.id}}').textContent = data.new_role;
+          });
+        });
+      ">Toggle Admin</button>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

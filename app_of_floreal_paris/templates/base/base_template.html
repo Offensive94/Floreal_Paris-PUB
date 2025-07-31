@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floreal Paris - {% block title %}{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Подключение Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Иконка сайта (фавикон) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+
+    <!-- Подключение CSS -->
+    <link rel="stylesheet" href="{% static 'base/main.css' %}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+    </div>
+    <!-- Фиксированная навигация с бургер-меню -->
+     <nav>
+    <div class="logo">
+      <a href="{% url 'home' %}" class="logo-link">Floreal Pari$</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'add_product' %}" class="btn btn-add-product" title="Добавить товар">＋</a>
+      {% endif %}
+    </div>
+    <form action="{% url 'search' %}" method="get" class="search-form">
+  <input type="text" name="q" placeholder="Поиск..." value="{{ request.GET.q }}">
+  <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+</form>
+    <button class="menu-toggle" id="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-links" id="nav-links">
+      <a href="{% url 'home' %}">
+          <i class="fa-solid fa-house"></i>
+          Главная
+      </a>
+      <a href="{% url 'product_list' %}">
+          <i class="fa-solid fa-database"></i>
+          Предложения
+      </a>
+      <a href="{% url 'chat_list' %}">
+          <i class="fa-solid fa-address-book"></i>
+          Сообщения
+
+      </a>
+{% if user.is_superuser or user.role == 'admin' %}
+  <a href="{% url 'dashboard:index' %}"><i class="fa-solid fa-user-secret"></i> Админ‑панель</a>
+{% else %}
+  <a href="{% url 'view_cart' %}" class="cart-link">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span id="cart-count">{{ cart_count }}</span>
+  </a>
+{% endif %}
+      <div class="auth-buttons">
+        {% if user.is_authenticated %}
+          <button class="btn login-btn"><a href="{% url 'profile' %}">
+              <i class="fa-solid fa-user"></i>
+              Профиль
+          </a></button>
+          <button class="btn register-btn"><a style="color: var(--primary-dark);"
+                                              href="{% url 'logout' %}">
+              <i class="fas fa-sign-out-alt"></i>
+              Выйти
+          </a></button>
+        {% else %}
+          <button class="btn login-btn"><a href="{% url 'login' %}">Войти</a></button>
+          <button class="btn register-btn"><a style="color: var(--primary-dark);" href="{% url 'register' %}">Регистрация</a></button>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+    {% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+    <!-- Основное содержимое -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Футер -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3 class="logo"></h3>
+                <p>Цветочная площадка с 2009 года. Наши пользователи создают эмоции из лепестков.</p>
+                <p>Пользуясь нашим сервисом, Вы соглашаетесь с нашим <a href="{% url 'terms' %}">пользовательским соглашением</a></p>
+            </div>
+
+            <div class="footer-column">
+                <h3>Контакты</h3>
+                <ul>
+                    <li>г. Уфа, ул. Неизвестных Авторов, 15</li>
+                    <li>+7 (919) 148-01-72</li>
+                    <li>montagemymy@gmail.com</li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Часы работы</h3>
+                <ul>
+                    <li>Пн-Пт: 9:00 - 21:00</li>
+                    <li>Сб-Вс: 10:00 - 20:00</li>
+                    <li>Доставка 24/7</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; <span id="current-year"></span> Floreal Paris. Все права защищены</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+  // 1) Анимации секций при скролле
+  const sections = document.querySelectorAll('section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  sections.forEach(section => observer.observe(section));
+
+  // 2) Установка текущего года в футере
+  const yearSpan = document.getElementById('current-year');
+  if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+  // 3) Бургер-меню
+  const mobileMenu = document.getElementById('mobile-menu');
+  const navLinks   = document.getElementById('nav-links');
+  if (mobileMenu && navLinks) {
+    mobileMenu.addEventListener('click', function() {
+      this.classList.toggle('active');
+      navLinks.classList.toggle('active');
+      document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+    });
+  }
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (mobileMenu && navLinks) {
+        mobileMenu.classList.remove('active');
+        navLinks.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // 4) Обработчик добавления в корзину (единственный)
+  document.querySelectorAll('.add-to-cart-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const pid = this.dataset.productId;
+      const qty = this.querySelector('[name="quantity"]').value;
+
+      fetch("{% url 'add_to_cart' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ product_id: pid, quantity: qty })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showToast('Товар добавлен в корзину!', 'success');
+          const el = document.getElementById('cart-count');
+          if (el) el.textContent = data.cart_count;
+        } else {
+          showToast(`Ошибка: ${data.error}`, 'danger');
+        }
+      });
+    });
+  });
+});
+
+// 5) Функция показа Bootstrap‑тостов
+function showToast(message, type = 'success') {
+  const container = document.querySelector('.toast-container');
+  const toastEl = document.createElement('div');
+  toastEl.className = `toast align-items-center text-bg-${type} border-0 mb-2`;
+  toastEl.setAttribute('role', 'alert');
+  toastEl.setAttribute('aria-live', 'assertive');
+  toastEl.setAttribute('aria-atomic', 'true');
+  toastEl.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto"
+              data-bs-dismiss="toast" aria-label="Закрыть"></button>
+    </div>`;
+  container.append(toastEl);
+  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+  toast.show();
+  toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+}
+    </script>
+
+
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

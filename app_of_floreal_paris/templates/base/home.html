@@ -1,0 +1,86 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'base/home.css' %}">
+{% endblock %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<!-- Герой-секция -->
+<section class="hero text-center rounded-3"
+         style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{% static 'images/floral-bg.jpg' %}');
+                background-size: cover; background-position: center;">
+    <h1 class="text-white">Floreal Pari$</h1>
+    <a href="{% url 'product_list' %}" class="hero-btn">Смотреть каталог</a>
+</section>
+
+<!-- Популярные товары -->
+<section class="popular-products">
+    <h2>Популярные товары</h2>
+    <div class="product-grid">
+        {% for product in popular_products %}
+            <a href="{% url 'product_detail' product.id %}" class="product-card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                {% else %}
+                    <div class="no-image-placeholder">
+                        <span>Изображение отсутствует</span>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.title }}</h5>
+                    <p class="card-text">{{ product.price }} ₽</p>
+                    <div class="card-meta">
+                        <span class="views-count">
+                            <i class="fas fa-eye"></i> {{ product.views }}
+                        </span>
+                    </div>
+                    <i class="fas fa-external-link-alt product-link-indicator"></i>
+                </div>
+            </a>
+        {% empty %}
+            <p class="no-products">Популярные товары появятся здесь</p>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Преимущества -->
+<section id="advantages" class="rounded-3">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4 mb-md-0">
+            <div class="advantage-item">
+                <div class="advantage-icon">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <h3>Быстрая доставка</h3>
+                <p>Доставим ваш букет в течение 2 часов</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4 mb-md-0">
+            <div class="advantage-item">
+                <div class="advantage-icon">
+                    <i class="bi bi-flower1"></i>
+                </div>
+                <h3>Свежие цветы</h3>
+                <p>Только свежесрезанные цветы от проверенных поставщиков</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="advantage-item">
+                <div class="advantage-icon">
+                    <i class="bi bi-gift"></i>
+                </div>
+                <h3>Подарочная упаковка</h3>
+                <p>Элегантная упаковка в подарок к каждому заказу</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Подключение Bootstrap Icons -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"></script>
+{% endblock %}

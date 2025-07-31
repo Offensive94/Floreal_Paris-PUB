@@ -1,0 +1,222 @@
+:root {
+    --primary-light: #ff6b9d;
+    --primary-dark: #a41623;
+    --text-light: #ffffff;
+    --text-secondary: #ffb6c1;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --hover-transition: all 0.3s ease;
+    --edit-yellow: #ffc107;
+    --edit-yellow-dark: #e0a800;
+    --delete-red: #dc3545;
+    --delete-red-dark: #bd2130;
+}
+
+.product-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.product-gallery {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    align-items: flex-start;
+}
+
+.main-image {
+    flex: 1;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: linear-gradient(45deg, rgba(164, 22, 35, 0.1), rgba(92, 11, 21, 0.1));
+    min-height: 400px;
+}
+
+.main-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 600px;
+    object-fit: cover;
+}
+
+.product-info {
+    flex: 1;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 182, 193, 0.1);
+}
+
+.product-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--text-light);
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.product-price {
+    font-size: 2.2rem;
+    color: #ffb6c1; /* Нежный розовый */
+    margin-bottom: 25px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding: 5px 15px;
+    background: rgba(92, 11, 21, 0.3);
+    border-radius: 10px;
+}
+
+.product-price span {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-left: 5px;
+    font-weight: 400;
+}
+
+.product-status {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: rgba(92, 11, 21, 0.3);
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 107, 157, 0.3);
+}
+
+.status-in-stock {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+}
+
+.product-description {
+    line-height: 1.8;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Общие стили для кнопок */
+.action-btn {
+    position: relative;
+    overflow: hidden;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Фиксим отступ между иконкой и текстом */
+    padding: 14px 25px;
+    border: none;
+    min-width: 160px; /* Фиксированная минимальная ширина */
+    text-align: center;
+}
+
+/* Стили для кнопки "В корзину" */
+.btn-add-cart {
+    background: linear-gradient(45deg, #28a745, #218838);
+    color: white;
+}
+
+/* Стили для кнопки "В избранное" */
+.btn-favorite {
+    background: transparent;
+    border: 2px solid var(--primary-light);
+    color: var(--primary-light);
+}
+
+.btn-edit {
+    background: linear-gradient(45deg, var(--primary-light), var(--primary-dark));
+    color: white;
+}
+
+.btn-delete {
+    background: linear-gradient(45deg, var(--gray-medium), var(--gray-dark));
+    color: white;
+}
+
+.action-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(25deg);
+    transition: var(--hover-transition);
+    opacity: 0;
+}
+
+.action-btn:hover::after {
+    left: 140%;
+    opacity: 1;
+}
+
+.btn-add-cart:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+}
+
+.btn-favorite:hover {
+    background: rgba(255, 107, 157, 0.1);
+    transform: translateY(-5px);
+}
+
+/* Анимации для кнопки редактирования */
+.btn-edit:hover {
+    background: linear-gradient(45deg, var(--edit-yellow), var(--edit-yellow-dark));
+    color: #000;
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(255, 193, 7, 0.6);
+}
+
+/* Анимации для кнопки удаления */
+.btn-delete:hover {
+    background: linear-gradient(45deg, var(--delete-red), var(--delete-red-dark));
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.6);
+    animation: shake 0.5s ease infinite;
+}
+
+/* Анимация дрожания для кнопки удаления */
+@keyframes shake {
+    0% { transform: translateY(-5px) translateX(0); }
+    25% { transform: translateY(-5px) translateX(-3px); }
+    50% { transform: translateY(-5px) translateX(3px); }
+    75% { transform: translateY(-5px) translateX(-3px); }
+    100% { transform: translateY(-5px) translateX(0); }
+}
+
+/* Усиленный блеск для опасных кнопок */
+.btn-delete:hover::after {
+    background: rgba(255, 255, 255, 0.5);
+    width: 30%;
+}
+
+/* Эффект пульсации для кнопки удаления */
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.btn-delete:active {
+    animation: pulse-red 0.5s;
+}

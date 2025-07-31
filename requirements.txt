@@ -1,0 +1,15 @@
+asgiref==3.8.1
+charset-normalizer==3.4.2
+colorama==0.4.6
+dill==0.4.0
+Django==5.2.3
+django-appconf==1.1.0
+django-imagekit==5.0.0
+django-taggit==6.1.0
+pilkit==3.0
+Pillow==11.3.0
+platformdirs==4.3.8
+psycopg2==2.9.10
+reportlab==4.4.2
+sqlparse==0.5.3
+tzdata==2025.2

@@ -1,0 +1,9 @@
+{% extends 'base/base_template.html' %}
+{% block content %}
+  <h2>Удалить пользователя {{ user_to_delete.username }}?</h2>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Да, удалить</button>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Отмена</a>
+  </form>
+{% endblock %}

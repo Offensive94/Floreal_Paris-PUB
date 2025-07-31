@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Товары{% endblock %}
+{% block content %}
+<table>
+  <tr><th>ID</th><th>Название</th><th>Продавец</th><th>Цена</th><th>Создан</th><th>Действия</th></tr>
+  {% for p in products %}
+  <tr id="prod-{{p.id}}">
+    <td>{{p.id}}</td>
+    <td>{{p.title}}</td>
+    <td>{{p.seller.username}}</td>
+    <td>{{p.price}}</td>
+    <td>{{p.created_at|date:"d.m.Y H:i"}}</td>
+    <td>
+      <button class="btn" onclick="
+        confirmModal('Удалить «{{p.title}}»?', ()=>{
+          ajaxPost('{% url "dashboard:delete_product" p.id %}', {}, ()=>{
+            document.getElementById('prod-{{p.id}}').remove();
+          });
+        });
+      ">Delete</button>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

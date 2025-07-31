@@ -1,0 +1,44 @@
+{% extends "base/base_template.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-image">
+            <img src="{% static 'accounts/images/floral-auth.jpg' %}" alt="Цветочная авторизация">
+        </div>
+        <div class="auth-form">
+            <h2>Вход в личный кабинет</h2>
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="form-errors">
+                    <div class="error">Неверное имя пользователя или пароль.</div>
+                </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="id_username">Имя пользователя или Email</label>
+                    {{ form.username }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_password">Пароль</label>
+                    {{ form.password }}
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+            <div class="auth-links">
+                <a href="{% url 'register' %}">Ещё нет аккаунта? Зарегистрируйтесь</a>
+                <a href="#">Забыли пароль?</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

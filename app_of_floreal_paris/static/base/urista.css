@@ -1,0 +1,231 @@
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', serif;
+      line-height: 1.8;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #f8f8f8;
+      color: #333;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><rect fill="none" stroke="%238B0000" stroke-width="2" x="10" y="10" width="80" height="80" rx="15" ry="15"/></svg>');
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #8B0000;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      color: #A52A2A;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      color: #800000;
+    }
+
+    p {
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+
+    .clause {
+      margin-left: 20px;
+      margin-bottom: 15px;
+    }
+
+    .subclause {
+      margin-left: 40px;
+      margin-bottom: 10px;
+    }
+
+    .highlight {
+      background-color: #fffacd;
+      padding: 15px;
+      border-left: 3px solid #ffd700;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .footer {
+      margin-top: 50px;
+      font-size: 14px;
+      text-align: center;
+      color: #666;
+      padding-top: 20px;
+      border-top: 1px dashed #ccc;
+    }
+
+    /* Стили для судейских мантий */
+    .judge-icon {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background-color: #8B0000;
+      border-radius: 50%;
+      margin: 0 5px -10px 5px;
+      position: relative;
+    }
+
+    .judge-icon:after {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: 5px;
+      width: 20px;
+      height: 25px;
+      background-color: #000;
+      border-radius: 50% 50% 0 0;
+    }
+
+    /* Стили для приглашения в команду */
+    .join-us {
+      background: linear-gradient(to right, #8B0000, #4B0082);
+      padding: 25px;
+      border-radius: 15px;
+      margin: 40px 0;
+      text-align: center;
+      border: 3px solid gold;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .join-us:before {
+      content: "🔥";
+      position: absolute;
+      font-size: 100px;
+      opacity: 0.1;
+      top: -30px;
+      right: -20px;
+      transform: rotate(25deg);
+    }
+
+    .join-us h2 {
+      color: gold;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+      border: none;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .join-us {
+  /* существующие стили остаются */
+  color: #FFD700; /* золотой цвет текста */
+}
+
+.join-us .invite-text {
+  font-size: 18px;
+  line-height: 1.6;
+  text-shadow: 0 0 5px rgba(0,0,0,0.7);
+}
+
+.join-us .benefits h3 {
+  color: #FFA500; /* оранжевый для подзаголовка */
+  font-size: 22px;
+  margin: 20px 0 15px;
+  text-align: center;
+}
+
+.join-us ul {
+  list-style: none;
+  margin: 20px 0;
+  padding: 0;
+}
+
+.join-us ul li {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.join-us ul li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #32CD32; /* зеленый цвет галочки */
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.join-us .action {
+  background: rgba(0,0,0,0.3);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 1px solid gold;
+}
+
+.join-us .action p {
+  margin: 10px 0;
+  font-size: 17px;
+}
+
+.join-us .action strong {
+  color: #00FFFF; /* бирюзовый для email */
+  font-size: 18px;
+}
+
+.join-us .action em {
+  color: #FF6347; /* томатный для темы письма */
+  font-style: normal;
+  font-weight: bold;
+}
+
+.join-us .highlight {
+  background: rgba(0,0,0,0.4);
+  border: none;
+}
+
+    /* Анимация для важных пунктов */
+    @keyframes highlight {
+      0% { background-color: #fffacd; }
+      50% { background-color: #ffdb58; }
+      100% { background-color: #fffacd; }
+    }
+
+    .super-important {
+      animation: highlight 2s infinite;
+      padding: 20px;
+      border: 2px dashed #8B0000;
+    }
+
+    /* Стиль для подписей */
+    .signature {
+      font-family: 'Dancing Script', cursive;
+      font-size: 24px;
+      color: #8B0000;
+      text-align: right;
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    /* Медиа запросы */
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      h2 {
+        font-size: 20px;
+      }
+    }

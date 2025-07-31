@@ -1,0 +1,44 @@
+{% extends 'base/base_template.html' %}
+{% load static %}
+
+{% block title %}Ассортимент{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'products/list.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Все товары</h2>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for product in products %}
+    <div class="col">
+      <a href="{% url 'product_detail' product.id %}" class="card h-100 product-card">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" class="square-image" alt="{{ product.title }}">
+        {% else %}
+          <div class="no-image-placeholder">
+            <span>Нет изображения</span>
+          </div>
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ product.title }}</h5>
+          <p class="card-text mb-2">{{ product.price }} руб.</p>
+          <i class="fas fa-external-link-alt product-link-indicator"></i>
+        </div>
+      </a>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info text-center">
+        Товаров пока нет
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
