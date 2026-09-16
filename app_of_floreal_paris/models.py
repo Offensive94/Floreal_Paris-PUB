@@ -3,9 +3,11 @@ import hashlib
 import hmac
 
 from datetime import timedelta
+from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.db.models import Sum, F
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -88,12 +90,13 @@ class Product(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default='in_stock',
+        db_index=True,
         verbose_name="Статус"
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
-    is_active = models.BooleanField(default=True, verbose_name="Активный")
-    views = models.PositiveIntegerField(default=0, verbose_name="Просмотры")
+    is_active = models.BooleanField(default=True, db_index=True, verbose_name="Активный")
+    views = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Просмотры")
 
     image = models.ImageField(
         upload_to='products/',
@@ -115,10 +118,14 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def total_items(self):
-        return sum(item.quantity for item in self.items.all())
+        result = self.items.aggregate(total=Sum('quantity'))['total']
+        return result or 0
 
     def total_price(self):
-        return sum(item.product.price * item.quantity for item in self.items.all())
+        result = self.items.aggregate(
+            total=Sum(F('product__price') * F('quantity'))
+        )['total']
+        return result or Decimal('0.00')
 
     def __str__(self):
         return f"Корзина пользователя {self.user.username} (Активна: {self.is_active})"
@@ -170,6 +177,14 @@ class Order(models.Model):
                                          message,
                                          hashlib.sha256).hexdigest()
         self.save()
+
+    def verify_signature(self) -> bool:
+        if not self.digital_signature:
+            return False
+        message = f"{self.transaction_id}{self.total_amount}".encode()
+        secret = settings.SECRET_KEY.encode()
+        expected = hmac.new(secret, message, hashlib.sha256).hexdigest()
+        return hmac.compare_digest(self.digital_signature, expected)
 
     def __str__(self):
         return f"Заказ #{self.id} - {self.get_status_display()}"
@@ -262,15 +277,9 @@ class UserProfile(models.Model):
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def manage_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
+        UserProfile.objects.get_or_create(user=instance)
 
 class Review(models.Model):
     product   = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')

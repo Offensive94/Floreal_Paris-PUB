@@ -1,27 +1,25 @@
+import json
+import random
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_POST
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
-import json
-from django.db import transaction
-from django.db import IntegrityError
-from django.db import connection
-import random
+from django.db import IntegrityError, transaction
 from django.db.models import Q
-
-
-
+from django.utils.html import escape
 
 from .models import (
-    User, Product, Cart, CartItem, Order,
+    Product, Cart, CartItem, Order,
     ChatRoom, Message, UserProfile, Review
 )
 from .forms import (
     RegisterForm, LoginForm, ProfileForm, ProductForm, ReviewForm, FakePaymentForm
 )
+
+User = get_user_model()
 
 # --- Аутентификация и профиль ---
 
@@ -31,13 +29,13 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Регистрация прошла успешно! Добро пожаловать, {}!'.format(user.username))
+            messages.success(request, f'Регистрация прошла успешно! Добро пожаловать, {user.username}!')
             return redirect('home')
         else:
-            # покажем все ошибки формы в виде всплывающих сообщений
             for field, errors in form.errors.items():
+                label = form.fields[field].label if field in form.fields else field
                 for error in errors:
-                    messages.error(request, f"{form.fields[field].label}: {error}")
+                    messages.error(request, f"{label}: {error}")
     else:
         form = RegisterForm()
 
@@ -64,6 +62,7 @@ def logout_view(request):
     messages.info(request, 'Вы успешно вышли.')
     return redirect('home')
 
+
 @login_required
 def profile_view(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
@@ -86,6 +85,7 @@ def profile_view(request):
         'my_orders': my_orders,
     })
 
+
 def public_profile(request, username):
     user_obj = get_object_or_404(User, username=username)
     products = user_obj.products.filter(is_active=True).order_by('-created_at')
@@ -93,6 +93,7 @@ def public_profile(request, username):
         'profile_user': user_obj,
         'products': products,
     })
+
 
 @login_required
 def add_review(request, product_id):
@@ -105,7 +106,8 @@ def add_review(request, product_id):
             rev.product = product
             rev.user = request.user
             try:
-                rev.save()
+                with transaction.atomic():
+                    rev.save()
                 messages.success(request, "Спасибо за ваш отзыв!")
             except IntegrityError:
                 messages.error(request, "Вы уже оставили отзыв на этот товар.")
@@ -118,20 +120,16 @@ def add_review(request, product_id):
         'product': product
     })
 
+
 # --- Главная и условия ---
 
 def home(request):
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT id, title, price, views
-              FROM app_of_floreal_paris_product
-             WHERE is_active = TRUE
-             ORDER BY views DESC
-             LIMIT 4
-        """)
-        rows = cursor.fetchall()
-    popular_products = Product.objects.order_by('-views')[:4]
-    new_products = Product.objects.order_by('-created_at')[:4]
+    popular_products = Product.objects.filter(is_active=True).only(
+        'id', 'title', 'price', 'views', 'image', 'seller_id'
+    ).order_by('-views')[:4]
+    new_products = Product.objects.filter(is_active=True).only(
+        'id', 'title', 'price', 'views', 'image', 'created_at', 'seller_id'
+    ).order_by('-created_at')[:4]
     return render(request, 'base/home.html', {
         'popular_products': popular_products,
         'new_products': new_products
@@ -140,6 +138,7 @@ def home(request):
 
 def terms_view(request):
     return render(request, 'base/urista.html')
+
 
 # --- Товары ---
 
@@ -151,8 +150,9 @@ def product_list(request):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_active=True)
     product.views += 1
-    product.save()
+    product.save(update_fields=['views'])
     return render(request, 'products/product_detail.html', {'product': product})
+
 
 @login_required
 def add_product(request):
@@ -171,15 +171,17 @@ def add_product(request):
         form = ProductForm()
     return render(request, 'products/product_form.html', {'form': form})
 
+
 @login_required
 def my_products(request):
     products = Product.objects.filter(seller=request.user)
     return render(request, 'products/product_list.html', {'products': products, 'mine': True})
 
+
 @login_required
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    if product.seller != request.user:
+    if product.seller != request.user and request.user.role != 'admin' and not request.user.is_superuser:
         return HttpResponseForbidden("Вы не можете редактировать этот товар")
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -191,10 +193,11 @@ def edit_product(request, product_id):
         form = ProductForm(instance=product)
     return render(request, 'products/product_form.html', {'form': form})
 
-@login_required()
+
+@login_required
 def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    if not (product.seller == request.user or request.user.role == 'admin'):
+    if not (product.seller == request.user or request.user.role == 'admin' or request.user.is_superuser):
         return HttpResponseForbidden("Вы не можете удалить этот товар")
     if request.method == 'POST':
         product.delete()
@@ -202,50 +205,38 @@ def delete_product(request, product_id):
         return redirect('my_products')
     return render(request, 'product_confirm_delete.html', {'product': product})
 
+
 def search_view(request):
     query = request.GET.get('q', '').strip()
     product_results = []
     user_results = []
 
     if query:
-        # --- Поиск товаров через SQL-шаблон ---
-        sql_products = """
-            SELECT id, title, description, price, image, views
-            FROM app_of_floreal_paris_product
-            WHERE title ILIKE %s OR description ILIKE %s
-            ORDER BY views DESC
-        """
-        pattern = f'%{query}%'
-        with connection.cursor() as cursor:
-            cursor.execute(sql_products, [pattern, pattern])
-            rows = cursor.fetchall()
-        for id, title, description, price, image, views in rows:
+        products = Product.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query),
+            is_active=True
+        ).only('id', 'title', 'description', 'price', 'image', 'views').order_by('-views')
+
+        for p in products:
             product_results.append({
-                'id': id,
-                'title': title,
-                'description': description,
-                'price': price,
-                'image': image,
-                'views': views,
+                'id': p.id,
+                'title': p.title,
+                'description': p.description,
+                'price': p.price,
+                'image': p.image.url if p.image else '',
+                'views': p.views,
             })
 
-        # --- Поиск пользователей через SQL-шаблон ---
-        # Таблица пользователей — app_of_floreal_paris_user
-        sql_users = """
-            SELECT id, username, email, date_joined
-            FROM app_of_floreal_paris_user
-            WHERE username ILIKE %s OR email ILIKE %s
-            ORDER BY date_joined DESC
-        """
-        with connection.cursor() as cursor:
-            cursor.execute(sql_users, [pattern, pattern])
-            rows = cursor.fetchall()
-        for id, username, email, date_joined in rows:
+        users = User.objects.filter(
+            Q(username__icontains=query) | Q(email__icontains=query)
+        ).only('id', 'username', 'email', 'date_joined').order_by('-date_joined')
+
+        for u in users:
             user_results.append({
-                'id': id,
-                'username': username,
-                'email': email,
-                'joined': date_joined,
+                'id': u.id,
+                'username': u.username,
+                'email': u.email,
+                'joined': u.date_joined,
             })
 
     return render(request, 'search.html', {
@@ -253,6 +244,7 @@ def search_view(request):
         'product_results': product_results,
         'user_results': user_results,
     })
+
 
 # --- Корзина и заказы ---
 
@@ -263,25 +255,29 @@ def get_active_cart(user):
     return cart
 
 
-
 @login_required
 def view_cart(request):
     cart = get_active_cart(request.user)
-    items = list(cart.items.select_related('product'))
-    # проверяем, что каждый product ещё существует
-    removed = []
-    for item in items:
-        if not Product.objects.filter(pk=item.product_id).exists():
-            removed.append(item.product.title)
+    raw_items = list(cart.items.select_related('product'))
+    items = []
+    removed_count = 0
+
+    for item in raw_items:
+        try:
+            if item.product and item.product.is_active:
+                items.append(item)
+            else:
+                item.delete()
+                removed_count += 1
+        except Product.DoesNotExist:
             item.delete()
-    if removed:
-        # одно уведомление со всеми удалёнными ((НЕ РАБОТАЕТ!!!))
+            removed_count += 1
+
+    if removed_count > 0:
         messages.warning(
             request,
-            "Эти товары были удалены продавцом и убраны из вашей корзины: "
-            + ", ".join(removed)
+            f"Некоторые товары ({removed_count} шт.) более недоступны и были удалены из вашей корзины."
         )
-        items = list(cart.items.select_related('product'))
 
     return render(request, 'cart/view_cart.html', {
         'cart': cart,
@@ -294,31 +290,39 @@ def view_cart(request):
 def add_to_cart(request):
     if request.user.role == 'admin':
         return JsonResponse({'success': False, 'error': 'Администраторы не могут пользоваться корзиной.'}, status=403)
-    data = json.loads(request.body)
-    product_id = data.get('product_id')
-    quantity = int(data.get('quantity', 1))
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        quantity = int(data.get('quantity', 1))
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return JsonResponse({'success': False, 'error': 'Некорректный формат данных.'}, status=400)
 
     cart = get_active_cart(request.user)
     product = get_object_or_404(Product, id=product_id, is_active=True)
 
     item, created = CartItem.objects.get_or_create(cart=cart, product=product)
     if created:
-        item.quantity = quantity
+        item.quantity = max(1, quantity)
     else:
-        item.quantity += quantity
+        item.quantity = max(1, item.quantity + quantity)
     item.save()
 
     return JsonResponse({
         'success': True,
         'cart_count': cart.total_items(),
-        'cart_total': str(cart.total_price())
+        'cart_total': f"{cart.total_price():.2f}"
     })
 
 
+@login_required
+@require_POST
 def update_cart_item(request):
-    data = json.loads(request.body)
-    pid = data.get('product_id')
-    action = data.get('action')  # 'increment' или 'decrement'
+    try:
+        data = json.loads(request.body)
+        pid = data.get('product_id')
+        action = data.get('action')
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return JsonResponse({'success': False, 'error': 'Некорректный формат данных.'}, status=400)
 
     cart = get_active_cart(request.user)
     item = get_object_or_404(CartItem, cart=cart, product_id=pid)
@@ -331,13 +335,11 @@ def update_cart_item(request):
             item.quantity -= 1
             item.save()
         else:
-            # если было 1, то удаляем полностью
             item.delete()
 
-    # пересчитываем
     count = cart.total_items()
     total = cart.total_price()
-    # если после декремента удалился, то qty = 0
+
     try:
         qty = CartItem.objects.get(cart=cart, product_id=pid).quantity
     except CartItem.DoesNotExist:
@@ -346,7 +348,7 @@ def update_cart_item(request):
     return JsonResponse({
         'success': True,
         'cart_count': count,
-        'cart_total': str(total),
+        'cart_total': f"{total:.2f}",
         'item_quantity': qty,
         'product_id': pid,
     })
@@ -355,44 +357,26 @@ def update_cart_item(request):
 @login_required
 @require_POST
 def remove_from_cart(request):
-    data = json.loads(request.body)
-    product_id = data.get('product_id')
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return JsonResponse({'success': False, 'error': 'Некорректный формат данных.'}, status=400)
 
-    # Берём именно активную корзину
     cart = get_active_cart(request.user)
-    # Удаляем элемент(ы)
     CartItem.objects.filter(cart=cart, product_id=product_id).delete()
 
     return JsonResponse({
         'success': True,
         'cart_count': cart.total_items(),
-        'cart_total': str(cart.total_price())
+        'cart_total': f"{cart.total_price():.2f}"
     })
 
-@require_POST
-@login_required
-def remove_cart_item(request):
-    data = json.loads(request.body)
-    product_id = data.get("product_id")
-
-    try:
-        cart = request.user.cart
-        cart.items.filter(product_id=product_id).delete()
-        cart.refresh_from_db()
-        return JsonResponse({
-            "success": True,
-            "cart_count": cart.total_items,
-            "cart_total": str(cart.total_price),
-        })
-    except Exception as e:
-        return JsonResponse({"success": False, "error": str(e)})
 
 @login_required
 @require_POST
 def clear_cart(request):
-    # Активная корзина
     cart = get_active_cart(request.user)
-    # Удаляем все товары
     cart.items.all().delete()
 
     return JsonResponse({
@@ -409,7 +393,6 @@ def checkout(request):
         messages.error(request, "Корзина пуста.")
         return redirect('product_list')
 
-    # Создаём заказ
     order = Order.objects.create(
         user=request.user,
         cart=cart,
@@ -418,28 +401,26 @@ def checkout(request):
     )
     order.generate_signature()
 
-    # Деактивируем корзину, чтобы не создать по ней ещё раз
     cart.is_active = False
-    cart.save()
+    cart.save(update_fields=['is_active'])
 
-    # Перенаправляем на страницу «оплаты»
     return redirect('payment', order_id=order.id)
+
 
 @login_required
 def payment_view(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     if order.status != 'pending':
-        messages.error(request, "Этот заказ уже оплачен или отменён.")
+        messages.error(request, "Этот заказ уже обработан или отменён.")
         return redirect('profile')
 
     if request.method == 'POST':
         form = FakePaymentForm(request.POST)
         if form.is_valid():
-            # эмулируем отправку на шлюз
             order.status = 'processing'
             order.save(update_fields=['status'])
-            # через момент «решаем» случайно успех/отказ (а чё поделать, реальной оплаты то нет)
-            success = random.random() < 0.8  # 80% вероятность успеха
+
+            success = random.random() < 0.9
             order.status = 'completed' if success else 'cancelled'
             order.save(update_fields=['status'])
             return redirect('payment_result', order_id=order.id)
@@ -451,10 +432,10 @@ def payment_view(request, order_id):
         'form': form,
     })
 
+
 @login_required
 def payment_result(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    # показываем страницу с итоговым статусом
     return render(request, 'checkout/result.html', {
         'order': order
     })
@@ -462,31 +443,55 @@ def payment_result(request, order_id):
 
 @login_required
 def generate_receipt(request, transaction_id):
-    # Ищем заказ именно по UUID‑полю transaction_id
     order = get_object_or_404(
         Order,
         transaction_id=transaction_id,
         user=request.user
     )
-    html = f"""
-    <html><head><title>Чек #{order.transaction_id}</title></head><body>
-    <h1>Чек #{order.transaction_id}</h1>
-    <p>Сумма: {order.total_amount} руб.</p>
-    </body></html>
-    """
-    response = HttpResponse(html, content_type='text/html')
-    response['Content-Disposition'] = (
-        f'attachment; filename="receipt_{order.transaction_id}.html"'
-    )
+    is_valid_sig = order.verify_signature()
+    sig_status = "HMAC Verified" if is_valid_sig else "Unverified"
+
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Чек #{escape(str(order.transaction_id))}</title>
+    <style>
+        body {{ font-family: 'Helvetica Neue', Arial, sans-serif; margin: 40px; color: #333; }}
+        .receipt-card {{ max-width: 500px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }}
+        .header {{ text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 16px; margin-bottom: 20px; }}
+        .title {{ font-size: 22px; font-weight: bold; color: #2c3e50; margin: 0; }}
+        .subtitle {{ font-size: 14px; color: #7f8c8d; margin-top: 4px; }}
+        .row {{ display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }}
+        .total-row {{ border-top: 2px solid #333; padding-top: 12px; font-size: 18px; font-weight: bold; }}
+        .badge {{ display: inline-block; padding: 4px 8px; background: #e8f8f5; color: #27ae60; border-radius: 4px; font-size: 12px; font-weight: bold; }}
+    </style>
+</head>
+<body>
+    <div class="receipt-card">
+        <div class="header">
+            <div class="title">Floreal Paris</div>
+            <div class="subtitle">Квитанция об оплате заказа</div>
+        </div>
+        <div class="row"><span>Номер транзакции:</span> <strong>{escape(str(order.transaction_id))}</strong></div>
+        <div class="row"><span>Покупатель:</span> <span>{escape(order.user.username if order.user else 'Гость')}</span></div>
+        <div class="row"><span>Дата:</span> <span>{order.created_at.strftime('%d.%m.%Y %H:%M')}</span></div>
+        <div class="row"><span>Статус подписи:</span> <span class="badge">{sig_status}</span></div>
+        <div class="row total-row"><span>Итоговая сумма:</span> <span>{order.total_amount} руб.</span></div>
+    </div>
+</body>
+</html>"""
+
+    response = HttpResponse(html, content_type='text/html; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="receipt_{order.transaction_id}.html"'
     return response
 
-# --- Чат --- (вырезано)
 
-# --- Админ ---
+# --- Админ функции ---
 
 @login_required
 def delete_review(request, review_id):
-    if request.user.role != 'admin':
+    if request.user.role != 'admin' and not request.user.is_superuser:
         return HttpResponseForbidden("Только администратор может удалять отзывы.")
     review = get_object_or_404(Review, id=review_id)
     product_id = review.product.id
@@ -494,8 +499,10 @@ def delete_review(request, review_id):
     messages.success(request, "Отзыв успешно удалён.")
     return redirect('product_detail', product_id=product_id)
 
+
 def is_admin(user):
     return user.role == 'admin' or user.is_superuser
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -511,17 +518,20 @@ def delete_user(request, username):
     if request.method == 'POST':
         target.delete()
         messages.success(request, f"Пользователь «{username}» и все его данные удалены.")
-        return redirect('home')  # или куда хотите после
+        return redirect('home')
 
     return redirect('public_profile', username=username)
 
+
+# --- Чат ---
+
 @login_required
 def chat_list(request):
-    # все комнаты, где я — либо buyer, либо seller
     rooms = ChatRoom.objects.filter(
         Q(buyer=request.user) | Q(seller=request.user)
     ).order_by('-updated_at')
     return render(request, 'chat/chat_list.html', {'rooms': rooms})
+
 
 @login_required
 def chat_room(request, room_id):
@@ -530,11 +540,9 @@ def chat_room(request, room_id):
         return HttpResponseForbidden()
     return render(request, 'chat/chat_room.html', {'room': room})
 
+
 @login_required
 def chat_messages(request, room_id):
-    """
-    Возвращает JSON со всеми сообщениями в комнате.
-    """
     room = get_object_or_404(ChatRoom, id=room_id)
     if request.user not in (room.buyer, room.seller):
         return JsonResponse({'error': 'Forbidden'}, status=403)
@@ -549,11 +557,9 @@ def chat_messages(request, room_id):
         })
     return JsonResponse({'messages': data})
 
+
 @login_required
 def send_message(request, room_id):
-    """
-    Принимает POST { content: "...", attachment: file? }
-    """
     room = get_object_or_404(ChatRoom, id=room_id)
     if request.user not in (room.buyer, room.seller):
         return JsonResponse({'error': 'Forbidden'}, status=403)
@@ -570,8 +576,7 @@ def send_message(request, room_id):
         sender=request.user,
         content=content
     )
-    # Обновим updated_at у комнаты, чтобы сортировка в списке работала
-    room.save()
+    room.save(update_fields=['updated_at'])
 
     return JsonResponse({
         'id': msg.id,
@@ -580,10 +585,10 @@ def send_message(request, room_id):
         'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
     })
 
+
 @login_required
 def start_chat(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_active=True)
-    # не сам с собой
     if product.seller == request.user:
         messages.error(request, "Нельзя писать самому себе.")
         return redirect('product_detail', product_id=product.id)

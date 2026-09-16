@@ -1,10 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
-from .models import UserProfile, Product
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .models import UserProfile, Product, Review
+
 User = get_user_model()
+
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(
@@ -21,7 +21,6 @@ class RegisterForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # для остальных полей назначаем form-control
         self.fields['password1'].widget = forms.PasswordInput(
             attrs={'class': 'form-control', 'placeholder': 'Пароль'}
         )
@@ -38,7 +37,9 @@ class RegisterForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Пользователь с таким же email уже зарегистрирован. Введите другой или свяжитесь с администрацией для восстановления аккаунта.")
+            raise forms.ValidationError(
+                "Пользователь с таким же email уже зарегистрирован. Введите другой или свяжитесь с администрацией."
+            )
         return email
 
 
@@ -60,18 +61,6 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
 
-
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['phone_number', 'address', 'favorite_flowers', 'birth_date']
-        widgets = {
-            'birth_date': forms.DateInput(attrs={'type': 'date'}),
-            'address': forms.Textarea(attrs={'rows': 3}),
-        }
-
-from django import forms
-from .models import UserProfile
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -96,12 +85,7 @@ class ProfileForm(forms.ModelForm):
                 'type': 'date'
             }),
         }
-        labels = {
-            # 'phone_number': 'Телефон',
-            # 'address': 'Адрес',
-            # 'favorite_flowers': 'Любимые цветы',
-            # 'birth_date': 'Дата рождения',
-        }
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -115,7 +99,6 @@ class ProductForm(forms.ModelForm):
             'tags': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'через запятую'}),
         }
 
-from .models import Review
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -123,10 +106,11 @@ class ReviewForm(forms.ModelForm):
         fields = ['rating', 'comment']
         widgets = {
             'rating': forms.Select(choices=[(i, f"{i} ★") for i in range(1, 6)]),
-            'comment': forms.Textarea(attrs={'rows': 3}),
+            'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
+
 class FakePaymentForm(forms.Form):
-    card_number = forms.CharField(label="Номер карты", max_length=19)
-    expiry = forms.CharField(label="Срок действия (MM/YY)", max_length=5)
-    cvv = forms.CharField(label="CVV", max_length=3)
+    card_number = forms.CharField(label="Номер карты", max_length=19, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    expiry = forms.CharField(label="Срок действия (MM/YY)", max_length=5, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    cvv = forms.CharField(label="CVV", max_length=3, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
